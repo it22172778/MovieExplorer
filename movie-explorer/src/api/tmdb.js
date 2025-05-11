@@ -1,11 +1,15 @@
 // src/api/tmdb.js
 import axios from 'axios';
 
+//  Use .env variable for security
+const API_KEY = '71271f2e626650d74890420c803b18db';
+
 // Create Axios instance with base settings
+const BASE_URL = 'https://api.themoviedb.org/3';
 const tmdb = axios.create({
-  baseURL: 'https://api.themoviedb.org/3',
+  baseURL: BASE_URL,
   params: {
-    api_key: '71271f2e626650d74890420c803b18db',
+    api_key: API_KEY,
     language: 'en-US',
   },
 });
@@ -17,7 +21,7 @@ export const fetchTrendingMovies = async () => {
     return response.data.results;
   } catch (error) {
     console.error('Error fetching trending movies:', error);
-    throw error;
+    throw new Error('Unable to fetch trending movies.');
   }
 };
 
@@ -30,7 +34,7 @@ export const searchMovies = async (query, page = 1) => {
     return response.data;
   } catch (error) {
     console.error('Error searching for movies:', error);
-    throw error;
+    throw new Error('Unable to search for movies.');
   }
 };
 
@@ -42,10 +46,19 @@ export const getMovieDetails = async (movieId) => {
         append_to_response: 'videos,credits',
       },
     });
-    return response.data;
+
+    // Extract trailer from videos
+    const trailer = response.data.videos?.results.find(
+      (vid) => vid.type === 'Trailer' && vid.site === 'YouTube'
+    );
+
+    return {
+      ...response.data,
+      trailer,
+    };
   } catch (error) {
     console.error('Error fetching movie details:', error);
-    throw error;
+    throw new Error('Unable to fetch movie details.');
   }
 };
 
@@ -56,7 +69,7 @@ export const fetchGenres = async () => {
     return response.data.genres;
   } catch (error) {
     console.error('Error fetching genres:', error);
-    throw error;
+    throw new Error('Unable to fetch genres.');
   }
 };
 
@@ -71,7 +84,23 @@ export const discoverMovies = async (filters = {}) => {
     return response.data;
   } catch (error) {
     console.error('Error discovering movies:', error);
-    throw error;
+    throw new Error('Unable to discover movies.');
+  }
+};
+
+// Fetch movie trailer
+export const getMovieTrailer = async (movieId) => {
+  try {
+    const response = await axios.get(
+      `${BASE_URL}/movie/${movieId}/videos?api_key=${API_KEY}`
+    );
+    const trailers = response.data.results.filter(
+      (video) => video.type === 'Trailer' && video.site === 'YouTube'
+    );
+    return trailers.length > 0 ? trailers[0] : null;
+  } catch (error) {
+    console.error('Error fetching movie trailer:', error);
+    return null;
   }
 };
 
