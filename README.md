@@ -51,13 +51,13 @@ movie-explorer/
 1. **Clone the repo:**
 
 ```bash
-git clone https://github.com/your-username/movie-explorer.git
+git clone https://github.com/it22172778/movie-explorer.git
 cd movie-explorer
 
 Install dependencies:
 
-bash
-Copy
-Edit
 npm install
+
+START
+npm start
 
