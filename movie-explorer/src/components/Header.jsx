@@ -1,18 +1,22 @@
 // src/components/Header.jsx
 import React from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  Button,
-} from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { isUserLoggedIn, setLoginStatus, getUsername } from '../utils/localStorage';
 import ThemeToggle from './ThemeToggle'; // ✅ Import reusable theme toggle component
 
 const Header = () => {
+  const navigate = useNavigate();
+  const loggedIn = isUserLoggedIn();
+  const username = getUsername();
+
+  const handleLogout = () => {
+    setLoginStatus(false);
+    navigate('/login');
+  };
+
   return (
-    <AppBar position="static" color="primary" enableColorOnDark>
+    <AppBar position="static" color="primary" enableColorOnDark sx={{ mb: 4 }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         {/* App Title */}
         <Typography
@@ -26,6 +30,7 @@ const Header = () => {
 
         {/* Navigation Links + Theme Toggle */}
         <Box display="flex" alignItems="center" gap={2}>
+          {/* Home Button */}
           <Button
             component={RouterLink}
             to="/"
@@ -34,6 +39,8 @@ const Header = () => {
           >
             Home
           </Button>
+
+          {/* Favorites Button */}
           <Button
             component={RouterLink}
             to="/favorites"
@@ -42,6 +49,27 @@ const Header = () => {
           >
             Favorites
           </Button>
+
+          {/* Login/Logout Section */}
+          {loggedIn ? (
+            <>
+              <Typography variant="body1" sx={{ mx: 2 }}>
+                Welcome, {username}
+              </Typography>
+              <Button color="inherit" onClick={handleLogout}>
+                Logout
+              </Button>
+            </>
+          ) : (
+            <Button
+              component={RouterLink}
+              to="/login"
+              color="inherit"
+              sx={{ textTransform: 'none' }}
+            >
+              Login
+            </Button>
+          )}
 
           {/* Theme Toggle Component */}
           <ThemeToggle />

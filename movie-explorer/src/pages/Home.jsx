@@ -18,11 +18,15 @@ const Home = () => {
   useEffect(() => {
     const loadTrending = async () => {
       try {
+        setLoading(true);
         const data = await fetchTrendingMovies();
-        setTrending(data.results);
+        setTrending(data);
+        setError(null);
       } catch (err) {
         console.error('Failed to fetch trending:', err);
         setError('Failed to load trending movies.');
+      } finally {
+        setLoading(false);
       }
     };
 

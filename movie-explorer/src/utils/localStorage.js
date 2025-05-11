@@ -28,23 +28,29 @@ export const setItem = (key, value) => {
   export const getUsername = () => getItem('username', '');
   
   // === Favorites Utilities ===
-  export const getFavorites = () => getItem('favorites', []);
+  const FAVORITES_KEY = 'favorites';
+
+  export const getFavorites = () => {
+    const favorites = localStorage.getItem(FAVORITES_KEY);
+    return favorites ? JSON.parse(favorites) : [];
+  };
+
   export const saveFavorite = (movie) => {
-    const current = getFavorites();
-    const updated = [...current, movie];
-    setItem('favorites', updated);
+    const favorites = getFavorites();
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify([...favorites, movie]));
   };
-  
+
   export const removeFavorite = (movieId) => {
-    const updated = getFavorites().filter((movie) => movie.id !== movieId);
-    setItem('favorites', updated);
+    const favorites = getFavorites();
+    const updatedFavorites = favorites.filter((movie) => movie.id !== movieId);
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(updatedFavorites));
   };
-  
+
   export const isFavorite = (movieId) => {
-    return getFavorites().some((movie) => movie.id === movieId);
+    const favorites = getFavorites();
+    return favorites.some((movie) => movie.id === movieId);
   };
   
   // === Last Search ===
   export const saveLastSearch = (query) => setItem('lastSearch', query);
   export const getLastSearch = () => getItem('lastSearch', '');
-  
